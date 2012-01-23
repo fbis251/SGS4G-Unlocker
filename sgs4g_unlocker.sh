@@ -33,6 +33,20 @@ done
 echo Removing temporary directory
 rm -r $working/
 
+# We didn't find the unlock code
+if [ $code = "00000000" || $code = "" ];then
+    echo
+    echo "Unlock code not found.  Please ensure:"
+    echo "- Your phone is a Samsung Galaxy S 4G"
+    echo "  with model number SGH-T959V."
+    echo "- Your phone is rooted."
+    echo "- You have Busybox installed."
+    echo "  -- If so, ensure Busybox is updated to the"
+    echo "     latest version."
+    echo
+exit 1
+fi
+
 echo
 echo $code
 echo
