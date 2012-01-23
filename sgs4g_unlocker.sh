@@ -2,21 +2,32 @@
 # SGS4G Unlocker version 0.5
 # Created by Fernando Barillas (FBis251)
 
+# Initialize variables
 working=/sdcard/unlocker_temporary
+code=''
 
-echo Creating temporary directory
+# Check to see if we should output debug messages
+if [ "$1" == "-x" ];then
+  _DEBUG="on"
+fi
+
+# Make sure that we only run debug commands when needed
+DEBUG() {
+  [ "$_DEBUG" == "on" ] &&  $@
+}
+
+DEBUG echo Creating temporary directory
 mkdir $working/
 
-echo Dumping nv_data.bin
-dd if=/efs/root/afs/settings/nv_data.bin of=$working/nv_data.bin
+DEBUG echo Dumping nv_data.bin
+dd if=/efs/root/afs/settings/nv_data.bin of=$working/nv_data.bin > /dev/null > /dev/null 2>&1
 
-echo Doing hex dump
+DEBUG echo Doing hex dump
 od -t x1 -A n -v --width=20480 $working/nv_data.bin > $working/od.txt 
 
-echo Finding unlock code
+DEBUG echo Finding unlock code
 grep -io -m 1 -E 'ff 0[01] 00 00 00 00 [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* ff ' $working/od.txt > $working/unlock.txt
 
-code=''
 for f in `cat $working/unlock.txt`
 do
   # Convert the hex number to decimal output
@@ -33,7 +44,7 @@ do
   fi
 done
 
-echo Removing temporary directory
+DEBUG echo Removing temporary directory
 rm -r $working/
 
 # We didn't find the unlock code
