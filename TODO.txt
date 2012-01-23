@@ -1,1 +1,4 @@
+Add a debug output option. Should keep the output to just the unlock code and savefile location.
+
+### DONE ###
 Add error checks when the script doesn't find a code.
