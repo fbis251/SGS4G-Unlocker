@@ -1,5 +1,5 @@
 #!/bin/sh
-# SGS4G Unlocker version 0.5
+# SGS4G Unlocker version 0.6
 # Created by Fernando Barillas (FBis251)
 
 # Initialize variables
