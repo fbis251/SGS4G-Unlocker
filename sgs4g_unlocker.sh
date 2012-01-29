@@ -16,9 +16,43 @@ DEBUG() {
   [ "$_DEBUG" == "on" ] &&  $@
 }
 
+# Errors
+ERROR () {
+    case $1 in
+	1)
+	    # nv_data.bin file not found
+	    echo
+	    echo "nv_data.bin file not found.  Please ensure:"
+	    echo "- Your phone is a Samsung Galaxy S 4G"
+	    echo "  with model number SGH-T959V."
+	    echo
+	    ;;
+	2)
+	    # Unlock code not found
+	    echo
+	    echo "Unlock code not found.  Please ensure:"
+	    echo "- Your phone is a Samsung Galaxy S 4G"
+	    echo "  with model number SGH-T959V."
+	    echo "- Your phone is rooted."
+	    echo "- You have Busybox installed."
+	    echo "  -- If so, ensure Busybox is updated to the"
+	    echo "     latest version."
+	    echo
+	    ;;
+    esac
+    DEBUG echo Removing temporary directory
+    rm -r $working/
+    exit $1
+}
+
 DEBUG echo Creating temporary directory
 mkdir $working/
 
+# Look for nv_data.bin
+if [ ! -e /efs/root/afs/settings/nv_data.bin ]; then
+    ERROR 1
+fi
+    
 DEBUG echo Dumping nv_data.bin
 dd if=/efs/root/afs/settings/nv_data.bin of=$working/nv_data.bin > /dev/null > /dev/null 2>&1
 
@@ -49,16 +83,7 @@ rm -r $working/
 
 # We didn't find the unlock code
 if [ "$code" == "00000000" -o "$code" == "" ];then
-  echo
-  echo "Unlock code not found.  Please ensure:"
-  echo "- Your phone is a Samsung Galaxy S 4G"
-  echo "  with model number SGH-T959V."
-  echo "- Your phone is rooted."
-  echo "- You have Busybox installed."
-  echo "  -- If so, ensure Busybox is updated to the"
-  echo "     latest version."
-  echo
-exit 1
+    ERROR 2
 fi
 
 echo Unlock code found:
