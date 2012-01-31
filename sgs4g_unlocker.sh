@@ -1,10 +1,12 @@
 #!/bin/sh
 # SGS4G Unlocker version 0.6
 # Created by Fernando Barillas (FBis251)
+# Contributions by Stephen Williams (stephen_w )
 
 # Initialize variables
 working=/sdcard/unlocker_temporary
 code=''
+_DEBUG="off"
 
 # Check to see if we should output debug messages
 if [ "$1" == "-x" ];then
@@ -54,7 +56,14 @@ if [ ! -e /efs/root/afs/settings/nv_data.bin ]; then
 fi
     
 DEBUG echo Dumping nv_data.bin
-dd if=/efs/root/afs/settings/nv_data.bin of=$working/nv_data.bin > /dev/null > /dev/null 2>&1
+if [ "$_DEBUG" == "on" ]
+then
+  # Show dd's output
+  dd if=/efs/root/afs/settings/nv_data.bin of=$working/nv_data.bin
+elif then
+  # Not in debug mode so we need to redirect dd's output
+  dd if=/efs/root/afs/settings/nv_data.bin of=$working/nv_data.bin > /dev/null > /dev/null 2>&1
+fi
 
 DEBUG echo Doing hex dump
 od -t x1 -A n -v --width=20480 $working/nv_data.bin > $working/od.txt 

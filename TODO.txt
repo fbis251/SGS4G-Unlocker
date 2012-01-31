@@ -1,3 +1,7 @@
+### TODO ###
+
 ### DONE ###
 Add a debug output option. Should keep the output to just the unlock code and savefile location.
 Add error checks when the script doesn't find a code.
+Add error checks to each step and add verbose output indicating to the user what went wrong.
+Add two cases for the dd command since the current format won't give any output even with debugging on.
