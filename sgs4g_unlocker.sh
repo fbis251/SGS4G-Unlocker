@@ -4,8 +4,10 @@
 # Contributions by Stephen Williams (stephen_w )
 
 # Initialize variables
-working=/sdcard/unlocker_temporary
-code=''
+BB=`which busybox`
+
+WORKING=/sdcard/unlocker_temporary
+CODE=''
 _DEBUG="off"
 
 # Check to see if we should output debug messages
@@ -41,37 +43,47 @@ ERROR () {
 	    echo "     latest version."
 	    echo
 	    ;;
+    3)
+        echo
+        echo "Busybox is not installed correctly!"
+        echo "- Please follow the instructions in"
+        echo "  the unlocker thread."
+        echo
+        ;;
     esac
     DEBUG echo Removing temporary directory
-    rm -r $working/
+    $BB rm -rf $WORKING/
     exit $1
 }
 
+if [ "$BB" == "" ];then
+    ERROR 1
+fi
+
 DEBUG echo Creating temporary directory
-mkdir $working/
+$BB mkdir -p $WORKING/
 
 # Look for nv_data.bin
 if [ ! -e /efs/root/afs/settings/nv_data.bin ]; then
-    ERROR 1
+    ERROR 2
 fi
-    
+
 DEBUG echo Dumping nv_data.bin
-if [ "$_DEBUG" == "on" ]
-then
+if [ "$_DEBUG" == "on" ]; then
   # Show dd's output
-  dd if=/efs/root/afs/settings/nv_data.bin of=$working/nv_data.bin
+  $BB dd if=/efs/root/afs/settings/nv_data.bin of=$WORKING/nv_data.bin
 elif then
   # Not in debug mode so we need to redirect dd's output
-  dd if=/efs/root/afs/settings/nv_data.bin of=$working/nv_data.bin > /dev/null > /dev/null 2>&1
+  $BB dd if=/efs/root/afs/settings/nv_data.bin of=$WORKING/nv_data.bin > /dev/null > /dev/null 2>&1
 fi
 
 DEBUG echo Doing hex dump
-od -t x1 -A n -v --width=20480 $working/nv_data.bin > $working/od.txt 
+$BB od -t x1 -A n -v --width=20480 $WORKING/nv_data.bin > $WORKING/od.txt
 
 DEBUG echo Finding unlock code
-grep -io -m 1 -E 'ff 0[01] 00 00 00 00 [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* ff ' $working/od.txt > $working/unlock.txt
+$BB grep -io -m 1 -E 'ff 0[01] 00 00 00 00 [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* [0-9a-f]* ff ' $WORKING/od.txt > $WORKING/unlock.txt
 
-for f in `cat $working/unlock.txt`
+for f in `cat $WORKING/unlock.txt`
 do
   # Convert the hex number to decimal output
   num=$((0x$f))
@@ -82,26 +94,26 @@ do
     then
       # We found the correct ascii values so to get them to decimals just
       # subtract 48
-      code=$code$(($num-48))
+      CODE=$CODE$(($num-48))
     fi
   fi
 done
 
 DEBUG echo Removing temporary directory
-rm -r $working/
+$BB rm -rf $WORKING/
 
 # We didn't find the unlock code
-if [ "$code" == "00000000" -o "$code" == "" ];then
-    ERROR 2
+if [ "$CODE" == "00000000" -o "$CODE" == "" ];then
+    ERROR 3
 fi
 
 echo Unlock code found:
 echo
-echo $code
+echo $CODE
 echo
 
 echo Saving unlock code in /sdcard/unlock_code.txt
-echo $code > /sdcard/unlock_code.txt
+echo $CODE > /sdcard/unlock_code.txt
 
 echo Done!
 exit 0
