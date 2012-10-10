@@ -1,4 +1,5 @@
 ### TODO ###
+Modify script to work within the recovery using AROMA
 
 ### DONE ###
 Add a debug output option. Should keep the output to just the unlock code and savefile location.
