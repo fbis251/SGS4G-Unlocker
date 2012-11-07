@@ -1,5 +1,5 @@
 #!/bin/sh
-# SGS4G Unlocker version 0.7
+# SGS4G Unlocker version 0.8
 # Created by Fernando Barillas (FBis251)
 # Contributions by Stephen Williams (stephen_w )
 
