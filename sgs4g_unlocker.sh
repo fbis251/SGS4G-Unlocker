@@ -4,7 +4,7 @@
 # Contributions by Stephen Williams (stephen_w )
 
 # Initialize variables
-BB=`which busybox`
+BB="which busybox"
 
 WORKING=/sdcard/unlocker_temporary
 CODE=''
@@ -72,7 +72,7 @@ DEBUG echo Dumping nv_data.bin
 if [ "$_DEBUG" == "on" ]; then
   # Show dd's output
   $BB dd if=/efs/root/afs/settings/nv_data.bin of=$WORKING/nv_data.bin
-elif then
+else
   # Not in debug mode so we need to redirect dd's output
   $BB dd if=/efs/root/afs/settings/nv_data.bin of=$WORKING/nv_data.bin > /dev/null > /dev/null 2>&1
 fi
